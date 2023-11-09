@@ -1,5 +1,4 @@
 {
-
   "name": "web-scraping-nestjs",
   "version": "0.0.1",
   "description": "",
@@ -18,19 +17,22 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "gcp-build": "node node_modules/puppeteer/install.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "chrome-aws-lambda": "^10.1.0",
     "puppeteer": "^21.4.1",
     "puppeteer-core": "^21.4.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "@google-cloud/functions-framework": "^3.3.0",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",

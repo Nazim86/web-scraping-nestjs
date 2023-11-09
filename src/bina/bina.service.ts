@@ -11,7 +11,9 @@ export class BinaService {
   async getHouses(price) {
     const browser = await puppeteer.launch({
       executablePath: executablePath(),
+      args: ['--no-sandbox'],
     });
+
     try {
       const page = await browser.newPage();
       page.setDefaultNavigationTimeout(2 * 60 * 1000);
@@ -23,40 +25,43 @@ export class BinaService {
         ),
       ]);
 
-      return await page.$$eval('.items_list .items-i', (resultItems) => {
-        return resultItems.map((resultItem) => {
-          const priceString = resultItem.querySelector(
-            '.card_params .abs_block .price .price-val',
-          )?.textContent;
+      const result = await page.$$eval(
+        '.items_list .items-i',
+        (resultItems) => {
+          return resultItems.map((resultItem) => {
+            const priceString = resultItem.querySelector(
+              '.card_params .abs_block .price .price-val',
+            )?.textContent;
 
-          const price = Number(priceString.replace(' ', ''));
+            const price = Number(priceString.replace(' ', ''));
 
-          const squareString = resultItem.querySelector(
-            '.card_params .name li:nth-child(2)',
-          )?.textContent;
+            const squareString = resultItem.querySelector(
+              '.card_params .name li:nth-child(2)',
+            )?.textContent;
 
-          const description =
-            resultItem.querySelector('.card_params .name')?.textContent;
+            const description =
+              resultItem.querySelector('.card_params .name')?.textContent;
 
-          const location = resultItem.querySelector('.card_params .location')
-            ?.textContent;
+            const location = resultItem.querySelector('.card_params .location')
+              ?.textContent;
 
-          const square = Number(squareString.split(' ')[0]);
+            const square = Number(squareString.split(' ')[0]);
 
-          const pricePerSquare = Math.trunc(price / square);
+            const pricePerSquare = Math.trunc(price / square);
 
-          const url = resultItem.querySelector('a').href;
+            const url = resultItem.querySelector('a').href;
 
-          if (pricePerSquare < 2000) {
-            console.log(pricePerSquare, price, description, location, url);
-            return { pricePerSquare, price, description, location, url };
-          }
-          // else {
-          //   return null;
-          // }
-          // const title = resultItem.querySelector('.item_link')?.textContent;
-        });
-      });
+            if (pricePerSquare < 2000) {
+              return { pricePerSquare, price, description, location, url };
+            } else {
+              return null;
+            }
+            // const title = resultItem.querySelector('.item_link')?.textContent;
+          });
+        },
+      );
+
+      console.log(result);
     } finally {
       await browser.close();
     }
