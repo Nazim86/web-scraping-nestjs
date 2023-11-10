@@ -6,6 +6,8 @@ import * as puppeteerCore from 'puppeteer-core';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MailService } from '../mail/mail.service';
 
+import * as process from 'process';
+
 //import { Cron, CronExpression } from '@nestjs/schedule';
 
 import puppeteer from 'puppeteer';
