@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-//import puppeteer from 'puppeteer-core';
+//import { ConfigService } from '@nestjs/config';
+import * as puppeteerCore from 'puppeteer-core';
 
-import { executablePath } from 'puppeteer';
+//import { executablePath } from 'puppeteer';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MailService } from '../mail/mail.service';
 
@@ -16,7 +16,7 @@ let puppeteerInstance: any;
 
 if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
   chrome = awsLambdaChrome;
-  puppeteerInstance = puppeteer;
+  puppeteerInstance = puppeteerCore.puppeteer;
 } else {
   puppeteerInstance = puppeteer;
 }
