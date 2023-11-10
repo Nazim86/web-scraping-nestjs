@@ -4,12 +4,6 @@ import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { join } from 'path';
 
-import * as process from 'process';
-import * as dotenv from 'dotenv';
-
-// Load environment variables from .env
-dotenv.config();
-
 @Module({
   imports: [
     MailerModule.forRoot({

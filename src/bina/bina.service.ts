@@ -6,12 +6,6 @@ import * as puppeteerCore from 'puppeteer-core';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MailService } from '../mail/mail.service';
 
-import * as process from 'process';
-import * as dotenv from 'dotenv';
-
-// Load environment variables from .env
-dotenv.config();
-
 //import { Cron, CronExpression } from '@nestjs/schedule';
 
 import puppeteer from 'puppeteer';
@@ -49,21 +43,20 @@ export class BinaService {
       };
     }
     console.log('cron works');
-    const browser = await puppeteerInstance.launch(options);
+    //const browser = await puppeteerInstance.launch(options);
 
-    // const browser = await puppeteer.launch({
-    //   args: [
-    //     "--disable-setuid-sandbox",
-    //     "--no-sandbox",
-    //     "--single-process",
-    //     "--no-zygote",
-    //   ],
-    //   executablePath:
-    //     process.env.NODE_ENV === "production"
-    //       ? process.env.PUPPETEER_EXECUTABLE_PATH
-    //       : puppeteer.executablePath(),
-    // });
-    //
+    const browser = await puppeteer.launch({
+      args: [
+        '--disable-setuid-sandbox',
+        '--no-sandbox',
+        '--single-process',
+        '--no-zygote',
+      ],
+      executablePath:
+        process.env.NODE_ENV === 'production'
+          ? process.env.PUPPETEER_EXECUTABLE_PATH
+          : puppeteer.executablePath(),
+    });
 
     // {
     //   executablePath: executablePath(),
