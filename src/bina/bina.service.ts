@@ -1,17 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
-//import * as puppeteer from 'puppeteer';
-import { executablePath } from 'puppeteer';
 import puppeteer from 'puppeteer-core';
+
+import { executablePath } from 'puppeteer';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { MailService } from '../mail/mail.service';
+
+//import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class BinaService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    //private readonly configService: ConfigService,
+    private readonly mailService: MailService,
+  ) {}
+
+  @Cron(CronExpression.EVERY_30_MINUTES)
   async getHouses(price) {
+    console.log('cron works');
     const browser = await puppeteer.launch({
       executablePath: executablePath(),
-      args: ['--no-sandbox'],
+      //args: ['--no-sandbox'],
     });
 
     try {
@@ -60,8 +69,9 @@ export class BinaService {
           });
         },
       );
-
-      console.log(result);
+      const stringEvler = JSON.stringify(result);
+      await this.mailService.sendEmail(stringEvler);
+      console.log(stringEvler);
     } finally {
       await browser.close();
     }

@@ -1,6 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { BinaService } from './bina.service';
-import { raw } from 'express';
 
 @Controller('bina')
 export class BinaController {

@@ -3,9 +3,15 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BinaModule } from './bina/bina.module';
 import { ConfigModule } from '@nestjs/config';
+import { MailModule } from './mail/mail.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), BinaModule],
+  imports: [
+    //ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
+    BinaModule,
+    MailModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
