@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import puppeteer from 'puppeteer-core';
+//import puppeteer from 'puppeteer-core';
 
 import { executablePath } from 'puppeteer';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -8,6 +8,18 @@ import { MailService } from '../mail/mail.service';
 
 //import { Cron, CronExpression } from '@nestjs/schedule';
 
+import puppeteer from 'puppeteer';
+import * as awsLambdaChrome from 'chrome-aws-lambda';
+
+let chrome: any = {};
+let puppeteerInstance: any;
+
+if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+  chrome = awsLambdaChrome;
+  puppeteerInstance = puppeteer;
+} else {
+  puppeteerInstance = puppeteer;
+}
 @Injectable()
 export class BinaService {
   constructor(
@@ -17,11 +29,24 @@ export class BinaService {
 
   @Cron(CronExpression.EVERY_30_MINUTES)
   async getHouses(price) {
+    let options = {};
+
+    if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+      options = {
+        args: [...chrome.args, '--hide-scrollbars', '--disable-web-security'],
+        defaultViewport: chrome.defaultViewport,
+        executablePath: await chrome.executablePath,
+        headless: true,
+        ignoreHTTPSErrors: true,
+      };
+    }
     console.log('cron works');
-    const browser = await puppeteer.launch({
-      executablePath: executablePath(),
-      //args: ['--no-sandbox'],
-    });
+    const browser = await puppeteerInstance.launch(options);
+    //
+    // {
+    //   executablePath: executablePath(),
+    //     args: ['--no-sandbox'],
+    // }
 
     try {
       const page = await browser.newPage();
