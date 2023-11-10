@@ -20,6 +20,7 @@ if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
 } else {
   puppeteerInstance = puppeteer;
 }
+
 @Injectable()
 export class BinaService {
   constructor(
@@ -27,8 +28,9 @@ export class BinaService {
     private readonly mailService: MailService,
   ) {}
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_8_HOURS)
   async getHouses(price) {
+    console.log('cron in bina');
     let options = {};
 
     if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {

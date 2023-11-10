@@ -4,9 +4,11 @@ import { AppService } from './app.service';
 import { BinaModule } from './bina/bina.module';
 import { ConfigModule } from '@nestjs/config';
 import { MailModule } from './mail/mail.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     //ConfigModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     BinaModule,
