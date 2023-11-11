@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 //import { ConfigService } from '@nestjs/config';
-import * as puppeteerCore from 'puppeteer-core';
+//import * as puppeteerCore from 'puppeteer-core';
 
 //import { executablePath } from 'puppeteer';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -11,17 +11,17 @@ import * as process from 'process';
 //import { Cron, CronExpression } from '@nestjs/schedule';
 
 import puppeteer from 'puppeteer';
-import * as awsLambdaChrome from 'chrome-aws-lambda';
-
-let chrome: any = {};
-let puppeteerInstance: any;
-
-if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-  chrome = awsLambdaChrome;
-  puppeteerInstance = puppeteerCore.puppeteer;
-} else {
-  puppeteerInstance = puppeteer;
-}
+// import * as awsLambdaChrome from 'chrome-aws-lambda';
+//
+// let chrome: any = {};
+// let puppeteerInstance: any;
+//
+// if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+//   chrome = awsLambdaChrome;
+//   puppeteerInstance = puppeteerCore.puppeteer;
+// } else {
+//   puppeteerInstance = puppeteer;
+// }
 
 @Injectable()
 export class BinaService {
@@ -33,17 +33,17 @@ export class BinaService {
   @Cron(CronExpression.EVERY_10_MINUTES)
   async getHouses(price) {
     console.log('cron in bina');
-    let options = {};
-
-    if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-      options = {
-        args: [...chrome.args, '--hide-scrollbars', '--disable-web-security'],
-        defaultViewport: chrome.defaultViewport,
-        executablePath: await chrome.executablePath,
-        headless: true,
-        ignoreHTTPSErrors: true,
-      };
-    }
+    // let options = {};
+    //
+    // if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+    //   options = {
+    //     args: [...chrome.args, '--hide-scrollbars', '--disable-web-security'],
+    //     defaultViewport: chrome.defaultViewport,
+    //     executablePath: await chrome.executablePath,
+    //     headless: true,
+    //     ignoreHTTPSErrors: true,
+    //   };
+    // }
     console.log('cron works');
     //const browser = await puppeteerInstance.launch(options);
 
@@ -72,7 +72,7 @@ export class BinaService {
       await Promise.all([
         page.waitForNavigation(),
         page.goto(
-          'https://bina.az/baki/alqi-satqi/menziller/yeni-tikili?has_repair=true&location_ids%5B%5D=6&location_ids%5B%5D=61&price_to=135000&room_ids%5B%5D=1&room_ids%5B%5D=2',
+          'https://bina.az/baki/alqi-satqi/menziller/yeni-tikili/1-otaqli?location_ids%5B%5D=8&location_ids%5B%5D=34&location_ids%5B%5D=37&location_ids%5B%5D=35&location_ids%5B%5D=38',
         ),
       ]);
 
@@ -102,7 +102,7 @@ export class BinaService {
 
             const url = resultItem.querySelector('a').href;
 
-            if (pricePerSquare < 2000) {
+            if (pricePerSquare < 2100) {
               return { pricePerSquare, price, description, location, url };
             } else {
               return null;
@@ -111,9 +111,16 @@ export class BinaService {
           });
         },
       );
-      const stringEvler = JSON.stringify(result);
-      await this.mailService.sendEmail(stringEvler);
-      console.log(stringEvler);
+      const notNullResults = result.filter((r) => {
+        if (r) return r;
+      });
+
+      // const stringEvler = JSON.stringify(notNullResults, null)
+      //   .split(',')
+      //   .join('\n\n');
+
+      await this.mailService.sendEmail(result);
+      console.log(notNullResults);
     } finally {
       await browser.close();
     }

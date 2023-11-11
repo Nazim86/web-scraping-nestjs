@@ -1,9 +1,14 @@
-<p>Dear{{ result }},</p>
 
 <ul>
   {{#each result}}
-    <li>{{pricePerSquare}}  years old</li>
+    <li>pricePerSquare:{{pricePerSquare}}</li>
+    <li>price:{{price}}</li>
+    <li>description:{{description}}</li>
+    <li>location:{{location}}</li>
+    <li>url:{{url}}</li>
+    <br>
   {{/each}}
 </ul>
+
 
 <p>If you did not request this email you can safely ignore it.</p>
