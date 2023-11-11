@@ -30,7 +30,7 @@ export class BinaService {
     private readonly mailService: MailService,
   ) {}
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CronExpression.EVERY_8_HOURS)
   async getHouses(price) {
     console.log('cron in bina');
     // let options = {};
