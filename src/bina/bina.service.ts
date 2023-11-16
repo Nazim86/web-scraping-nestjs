@@ -137,11 +137,11 @@ export class BinaService {
         } catch (e) {
           console.log(e);
 
-          const tenMinutesAgo = new Date();
-          tenMinutesAgo.setMinutes(tenMinutesAgo.getMinutes() - 10);
+          const hourAgo = new Date();
+          hourAgo.setHours(hourAgo.getHours() - 1);
 
           const newAnnouncedHouses = await this.HouseModel.find({
-            createdAt: { $gte: tenMinutesAgo },
+            createdAt: { $gte: hourAgo },
           });
 
           const userView = newAnnouncedHouses.map((h) => {
