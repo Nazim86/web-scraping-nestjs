@@ -97,7 +97,7 @@ export class BinaService {
 
                 //console.log(announceNumber);
 
-                if (pricePerSquare < 5000) {
+                if (pricePerSquare < 2300) {
                   return {
                     _id: announceNumber,
                     pricePerSquare,
@@ -137,11 +137,11 @@ export class BinaService {
         } catch (e) {
           console.log(e);
 
-          const fiveHoursAgo = new Date();
-          fiveHoursAgo.setHours(fiveHoursAgo.getHours() - 1);
+          const tenMinutesAgo = new Date();
+          tenMinutesAgo.setMinutes(tenMinutesAgo.getMinutes() - 10);
 
           const newAnnouncedHouses = await this.HouseModel.find({
-            createdAt: { $gte: fiveHoursAgo },
+            createdAt: { $gte: tenMinutesAgo },
           });
 
           const userView = newAnnouncedHouses.map((h) => {

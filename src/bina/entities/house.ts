@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { HouseDto } from '../house.dto';
+import moment from 'moment-timezone';
 
 export type HouseDocument = HydratedDocument<House>;
 
@@ -35,8 +36,7 @@ export class House {
 
   @Prop({
     type: Date,
-    // `Date.now()` returns the current unix timestamp as a number
-    default: Date.now,
+    default: moment.tz(Date.now(), 'Asia/Baku'),
   })
   createdAt: Date;
 
