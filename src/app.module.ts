@@ -9,6 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
+    // MongooseModule.forFeature(mongooseModels),
     MongooseModule.forRoot(process.env.MONGO_URL),
     ScheduleModule.forRoot(),
     //ConfigModule.forRoot(),

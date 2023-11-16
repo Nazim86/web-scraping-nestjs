@@ -1,6 +1,5 @@
 export class HouseDto {
-    
-  anounceNumber: string;
+  announceNumber: string;
 
   pricePerSquare: number;
 

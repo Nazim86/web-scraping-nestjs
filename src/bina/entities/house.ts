@@ -15,10 +15,10 @@ export type HouseModelType = Model<House> & HouseModelStaticType;
 
 @Schema()
 export class House {
-  @Prop()
-  anounceNumber: string;
+  @Prop({ required: true, unique: true })
+  _id: string;
 
-  @Prop()
+  @Prop({ required: true })
   pricePerSquare: number;
 
   @Prop()
@@ -33,12 +33,19 @@ export class House {
   @Prop()
   url: string;
 
+  @Prop({
+    type: Date,
+    // `Date.now()` returns the current unix timestamp as a number
+    default: Date.now,
+  })
+  createdAt: Date;
+
   static createHouseHistory(
     createHouseDto: HouseDto,
     HouseModel: HouseModelType,
   ) {
     const newHouseHistory = {
-      anounceNumber: createHouseDto.anounceNumber,
+      announceNumber: createHouseDto.announceNumber,
       pricePerSquare: createHouseDto.pricePerSquare,
       price: createHouseDto.price,
       description: createHouseDto.description,
@@ -51,3 +58,9 @@ export class House {
 }
 
 export const HouseSchema = SchemaFactory.createForClass(House);
+
+const houseStaticMethods = { createHouseHistory: House.createHouseHistory };
+
+//CommentSchema.methods = { updateComment: Comment.prototype.updateComment };
+
+HouseSchema.statics = houseStaticMethods;
