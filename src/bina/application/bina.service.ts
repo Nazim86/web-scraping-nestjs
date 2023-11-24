@@ -1,5 +1,5 @@
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { MailService } from '../mail/mail.service';
+import { MailService } from '../../mail/mail.service';
 
 import * as process from 'process';
 
@@ -7,13 +7,15 @@ import puppeteer from 'puppeteer';
 
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { House, HouseModelType } from './entities/house';
+import { House, HouseModelType } from '../entities/house';
+import { BinaRepository } from '../ infrastructure/bina.repository';
 
 @Injectable()
 export class BinaService {
   constructor(
     //private readonly configService: ConfigService,
     private readonly mailService: MailService,
+    private readonly binaRepository: BinaRepository,
     @InjectModel(House.name) private HouseModel: HouseModelType,
   ) {}
 
@@ -43,7 +45,7 @@ export class BinaService {
       await Promise.all([
         page.waitForNavigation(),
         page.goto(
-          'https://bina.az/baki/alqi-satqi/menziller/yeni-tikili?location_ids%5B%5D=8&location_ids%5B%5D=37&location_ids%5B%5D=35&location_ids%5B%5D=38&price_to=135000&room_ids%5B%5D=1&room_ids%5B%5D=2',
+          'https://bina.az/baki/alqi-satqi/menziller/yeni-tikili?has_bill_of_sale=true&location_ids%5B%5D=8&location_ids%5B%5D=34&location_ids%5B%5D=37&location_ids%5B%5D=35&location_ids%5B%5D=38&price_to=140000&room_ids%5B%5D=1&room_ids%5B%5D=2',
         ),
       ]);
 
@@ -130,35 +132,34 @@ export class BinaService {
       } catch (error) {
         //console.log(error);
         //console.log(scrapedArray);
-        try {
-          await this.HouseModel.insertMany(scrapedArray, { ordered: false });
 
-          //await this.mailService.sendEmail(newAnnouncedHouses);
-        } catch (e) {
-          console.log(e);
+        await this.binaRepository.createHouseHistory(scrapedArray);
 
-          const hourAgo = new Date();
-          hourAgo.setHours(hourAgo.getHours() - 1);
+        //await this.HouseModel.insertMany(scrapedArray, { ordered: false });
 
-          const newAnnouncedHouses = await this.HouseModel.find({
-            createdAt: { $gte: hourAgo },
-          });
+        //await this.mailService.sendEmail(newAnnouncedHouses);
 
-          const userView = newAnnouncedHouses.map((h) => {
-            return {
-              pricePerSquare: h.pricePerSquare,
-              price: h.price,
-              description: h.description,
-              location: h.location,
-              url: h.url,
-            };
-          });
+        const hourAgo = new Date();
+        hourAgo.setHours(hourAgo.getHours() - 1);
 
-          console.log('newAnnouncedHouses', userView);
+        const newAnnouncedHouses = await this.HouseModel.find({
+          createdAt: { $gte: hourAgo },
+        });
 
-          if (newAnnouncedHouses.length > 0) {
-            await this.mailService.sendEmail(userView);
-          }
+        const userView = newAnnouncedHouses.map((h) => {
+          return {
+            pricePerSquare: h.pricePerSquare,
+            price: h.price,
+            description: h.description,
+            location: h.location,
+            url: h.url,
+          };
+        });
+
+        console.log('newAnnouncedHouses', userView);
+
+        if (newAnnouncedHouses.length > 0) {
+          await this.mailService.sendEmail(userView);
         }
       }
       //console.log(scrapedArray);
