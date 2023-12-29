@@ -19,7 +19,7 @@ export class BinaService {
     @InjectModel(House.name) private HouseModel: HouseModelType,
   ) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  //@Cron(CronExpression.EVERY_HOUR)
   async getHouses(price) {
     console.log('cron in bina');
 
@@ -42,12 +42,12 @@ export class BinaService {
       const page = await browser.newPage();
       page.setDefaultNavigationTimeout(2 * 60 * 1000);
 
-      await Promise.all([
-        page.waitForNavigation(),
-        page.goto(
-          'https://bina.az/baki/alqi-satqi/menziller/yeni-tikili?has_bill_of_sale=true&location_ids%5B%5D=8&location_ids%5B%5D=34&location_ids%5B%5D=37&location_ids%5B%5D=35&location_ids%5B%5D=38&price_to=140000&room_ids%5B%5D=1&room_ids%5B%5D=2',
-        ),
-      ]);
+      const binazLink =
+        'https://bina.az/baki/alqi-satqi/menziller/kohne-tikili?location_ids%5B%5D=5&location_ids%5B%5D=8&location_ids%5B%5D=6&location_ids%5B%5D=61&location_ids%5B%5D=34&location_ids%5B%5D=2&location_ids%5B%5D=37&location_ids%5B%5D=7&location_ids%5B%5D=59&location_ids%5B%5D=1&location_ids%5B%5D=60&location_ids%5B%5D=35&location_ids%5B%5D=38&location_ids%5B%5D=129&location_ids%5B%5D=130&location_ids%5B%5D=131&location_ids%5B%5D=103&price_to=115000&room_ids%5B%5D=1&room_ids%5B%5D=2';
+      //'https://bina.az/baki/alqi-satqi/menziller/yeni-tikili?location_ids%5B%5D=6&location_ids%5B%5D=61&location_ids%5B%5D=1&location_ids%5B%5D=129&location_ids%5B%5D=130&price_to=110000&room_ids%5B%5D=1&room_ids%5B%5D=2';
+      //https://bina.az/baki/alqi-satqi/menziller/yeni-tikili?has_bill_of_sale=true&location_ids%5B%5D=8&location_ids%5B%5D=34&location_ids%5B%5D=37&location_ids%5B%5D=35&location_ids%5B%5D=38&price_to=140000&room_ids%5B%5D=1&room_ids%5B%5D=2'
+
+      await Promise.all([page.waitForNavigation(), page.goto(binazLink)]);
 
       let nextPage = 'next';
 
@@ -83,6 +83,9 @@ export class BinaService {
                 const description =
                   resultItem.querySelector('.card_params .name')?.textContent;
 
+                const floorString = `${description}`.split('/')[1];
+                const floor = Number(`${floorString}`.split(' ')[0]);
+
                 const location = resultItem.querySelector(
                   '.card_params .location',
                 )?.textContent;
@@ -99,10 +102,11 @@ export class BinaService {
 
                 //console.log(announceNumber);
 
-                if (pricePerSquare < 2300) {
+                if (floor > 5) {
                   return {
                     _id: announceNumber,
                     pricePerSquare,
+                    floor,
                     price,
                     description,
                     location,
@@ -131,7 +135,7 @@ export class BinaService {
         }
       } catch (error) {
         //console.log(error);
-        //console.log(scrapedArray);
+        console.log(scrapedArray);
 
         await this.binaRepository.createHouseHistory(scrapedArray);
 
@@ -149,6 +153,7 @@ export class BinaService {
         const userView = newAnnouncedHouses.map((h) => {
           return {
             pricePerSquare: h.pricePerSquare,
+            floor: h.floor,
             price: h.price,
             description: h.description,
             location: h.location,
@@ -158,9 +163,9 @@ export class BinaService {
 
         console.log('newAnnouncedHouses', userView);
 
-        if (newAnnouncedHouses.length > 0) {
-          await this.mailService.sendEmail(userView);
-        }
+        // if (newAnnouncedHouses.length > 0) {
+        //   await this.mailService.sendEmail(userView);
+        // }
       }
       //console.log(scrapedArray);
     } finally {

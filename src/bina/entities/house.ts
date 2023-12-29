@@ -23,6 +23,9 @@ export class House {
   pricePerSquare: number;
 
   @Prop()
+  floor: number;
+
+  @Prop()
   price: number;
 
   @Prop()
