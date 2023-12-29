@@ -19,7 +19,7 @@ export class BinaService {
     @InjectModel(House.name) private HouseModel: HouseModelType,
   ) {}
 
-  //@Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_HOUR)
   async getHouses(price) {
     console.log('cron in bina');
 
