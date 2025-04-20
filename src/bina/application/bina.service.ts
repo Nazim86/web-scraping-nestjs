@@ -19,13 +19,14 @@ export class BinaService {
     @InjectModel(House.name) private HouseModel: HouseModelType,
   ) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async getHouses(price) {
     console.log('cron in bina');
 
     //const houses =
 
     const browser = await puppeteer.launch({
+      headless: 'new',
       args: [
         '--disable-setuid-sandbox',
         '--no-sandbox',
@@ -163,9 +164,9 @@ export class BinaService {
 
         console.log('newAnnouncedHouses', userView);
 
-        // if (newAnnouncedHouses.length > 0) {
-        //   await this.mailService.sendEmail(userView);
-        // }
+        if (newAnnouncedHouses.length > 0) {
+          await this.mailService.sendEmail(userView);
+        }
       }
       //console.log(scrapedArray);
     } finally {
